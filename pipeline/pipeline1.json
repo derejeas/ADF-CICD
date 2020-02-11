@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "CopyFromBlobToSql",
+				"name": "Copy data1",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -19,7 +19,7 @@
 						"type": "DelimitedTextSource",
 						"storeSettings": {
 							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
+							"recursive": false,
 							"enablePartitionDiscovery": false
 						},
 						"formatSettings": {
@@ -39,8 +39,7 @@
 									"ordinal": 1
 								},
 								"sink": {
-									"name": "FirstName",
-									"type": "String"
+									"name": "FirstName"
 								}
 							},
 							{
@@ -49,8 +48,7 @@
 									"ordinal": 2
 								},
 								"sink": {
-									"name": "LastName",
-									"type": "String"
+									"name": "LastName"
 								}
 							}
 						]
@@ -58,16 +56,47 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "SourceBlobDataset",
+						"referenceName": "SourceBlob",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "AzureSqlTable1",
+						"referenceName": "OutputSqlData",
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "Delete1",
+				"type": "Delete",
+				"dependsOn": [
+					{
+						"activity": "Copy data1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "BlobSource",
+						"type": "DatasetReference"
+					},
+					"enableLogging": false,
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": false
+					}
+				}
 			}
 		],
 		"annotations": []
